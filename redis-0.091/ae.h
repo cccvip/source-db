@@ -43,21 +43,32 @@ typedef void aeEventFinalizerProc(struct aeEventLoop *eventLoop, void *clientDat
 /* File event structure */
 typedef struct aeFileEvent {
     int fd;
+    //fd 状态
     int mask; /* one of AE_(READABLE|WRITABLE|EXCEPTION) */
+    //事件回调函数
     aeFileProc *fileProc;
+    //aeFileEvent destroy 回调函数
     aeEventFinalizerProc *finalizerProc;
+    //传输数据
     void *clientData;
+    //使用链表存储数据
     struct aeFileEvent *next;
 } aeFileEvent;
 
+//超时时间
 /* Time event structure */
 typedef struct aeTimeEvent {
     long long id; /* time event identifier. */
+    //转换为具体时间戳
     long when_sec; /* seconds */
     long when_ms; /* milliseconds */
+    //超时调用函数
     aeTimeProc *timeProc;
+    //aeTimeEvent destroy执行的函数
     aeEventFinalizerProc *finalizerProc;
+    //数据
     void *clientData;
+    //使用链表串联了事件
     struct aeTimeEvent *next;
 } aeTimeEvent;
 

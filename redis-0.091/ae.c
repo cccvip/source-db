@@ -39,26 +39,34 @@
 #include "ae.h"
 #include "zmalloc.h"
 
+//创建事件 初始化
 aeEventLoop *aeCreateEventLoop(void) {
     aeEventLoop *eventLoop;
-
+    //分配空间
     eventLoop = zmalloc(sizeof(*eventLoop));
     if (!eventLoop) return NULL;
+    //初始化参数属性
     eventLoop->fileEventHead = NULL;
     eventLoop->timeEventHead = NULL;
+    //事件下一个Id
     eventLoop->timeEventNextId = 0;
     eventLoop->stop = 0;
+
     return eventLoop;
 }
 
+//删除
 void aeDeleteEventLoop(aeEventLoop *eventLoop) {
+    //释放空间
     zfree(eventLoop);
 }
 
+//停止
 void aeStop(aeEventLoop *eventLoop) {
     eventLoop->stop = 1;
 }
 
+//创建ae事件对象,并且绑定 fd<=>aeEvent
 int aeCreateFileEvent(aeEventLoop *eventLoop, int fd, int mask,
         aeFileProc *proc, void *clientData,
         aeEventFinalizerProc *finalizerProc)
@@ -72,15 +80,17 @@ int aeCreateFileEvent(aeEventLoop *eventLoop, int fd, int mask,
     fe->fileProc = proc;
     fe->finalizerProc = finalizerProc;
     fe->clientData = clientData;
+    //插入eventLoop链表中 使用头插法
     fe->next = eventLoop->fileEventHead;
     eventLoop->fileEventHead = fe;
     return AE_OK;
 }
 
+//销毁event对象
 void aeDeleteFileEvent(aeEventLoop *eventLoop, int fd, int mask)
 {
     aeFileEvent *fe, *prev = NULL;
-
+    //遍历链表 执行finalizerProc
     fe = eventLoop->fileEventHead;
     while(fe) {
         if (fe->fd == fd && fe->mask == mask) {
@@ -98,15 +108,17 @@ void aeDeleteFileEvent(aeEventLoop *eventLoop, int fd, int mask)
     }
 }
 
+//获取时间戳
 static void aeGetTime(long *seconds, long *milliseconds)
 {
     struct timeval tv;
-
+    //获取当前时间 秒、毫秒
     gettimeofday(&tv, NULL);
     *seconds = tv.tv_sec;
     *milliseconds = tv.tv_usec/1000;
 }
 
+//获取未来时间,用于设置超时时间
 static void aeAddMillisecondsToNow(long long milliseconds, long *sec, long *ms) {
     long cur_sec, cur_ms, when_sec, when_ms;
 
@@ -121,6 +133,8 @@ static void aeAddMillisecondsToNow(long long milliseconds, long *sec, long *ms) 
     *ms = when_ms;
 }
 
+
+//创建超时事件
 long long aeCreateTimeEvent(aeEventLoop *eventLoop, long long milliseconds,
         aeTimeProc *proc, void *clientData,
         aeEventFinalizerProc *finalizerProc)
@@ -140,6 +154,7 @@ long long aeCreateTimeEvent(aeEventLoop *eventLoop, long long milliseconds,
     return id;
 }
 
+//删除超时事件
 int aeDeleteTimeEvent(aeEventLoop *eventLoop, long long id)
 {
     aeTimeEvent *te, *prev = NULL;
@@ -162,6 +177,8 @@ int aeDeleteTimeEvent(aeEventLoop *eventLoop, long long id)
     return AE_ERR; /* NO event with the specified ID found */
 }
 
+
+//读取链表中最快超时的事件
 /* Search the first timer to fire.
  * This operation is useful to know how many time the select can be
  * put in sleep without to delay any event.
@@ -183,6 +200,9 @@ static aeTimeEvent *aeSearchNearestTimer(aeEventLoop *eventLoop)
     return nearest;
 }
 
+
+
+//开启事件循环
 /* Process every pending time event, then every pending file event
  * (that may be registered by time event callbacks just processed).
  * Without special flags the function sleeps until some file event
@@ -198,20 +218,27 @@ static aeTimeEvent *aeSearchNearestTimer(aeEventLoop *eventLoop)
  * The function returns the number of events processed. */
 int aeProcessEvents(aeEventLoop *eventLoop, int flags)
 {
+
+    //初始化属性    
     int maxfd = 0, numfd = 0, processed = 0;
     fd_set rfds, wfds, efds;
+
     aeFileEvent *fe = eventLoop->fileEventHead;
     aeTimeEvent *te;
+    
     long long maxId;
     AE_NOTUSED(flags);
 
     /* Nothing to do? return ASAP */
     if (!(flags & AE_TIME_EVENTS) && !(flags & AE_FILE_EVENTS)) return 0;
 
-    FD_ZERO(&rfds);
-    FD_ZERO(&wfds);
-    FD_ZERO(&efds);
+    FD_ZERO(&rfds); //读事件
+    FD_ZERO(&wfds); //写事件
+    FD_ZERO(&efds); //异常事件
 
+    //通过flags 标志位,处理事件
+
+    //将链表中所有fd 进行分组存入rfds,wfds,efds
     /* Check file events */
     if (flags & AE_FILE_EVENTS) {
         while (fe != NULL) {
@@ -232,6 +259,7 @@ int aeProcessEvents(aeEventLoop *eventLoop, int flags)
         aeTimeEvent *shortest = NULL;
         struct timeval tv, *tvp;
 
+        //搜索最近的超时事件
         if (flags & AE_TIME_EVENTS && !(flags & AE_DONT_WAIT))
             shortest = aeSearchNearestTimer(eventLoop);
         if (shortest) {
@@ -249,6 +277,7 @@ int aeProcessEvents(aeEventLoop *eventLoop, int flags)
                 tvp->tv_usec = (shortest->when_ms - now_ms)*1000;
             }
         } else {
+            //没有需要等待的事件,事件null
             /* If we have to check for events but need to return
              * ASAP because of AE_DONT_WAIT we need to se the timeout
              * to zero */
@@ -261,9 +290,13 @@ int aeProcessEvents(aeEventLoop *eventLoop, int flags)
             }
         }
 
+        //核心代码 执行select()函数
         retval = select(maxfd+1, &rfds, &wfds, &efds, tvp);
+
         if (retval > 0) {
+            
             fe = eventLoop->fileEventHead;
+            //遍历fe链表 处理所有事件
             while(fe != NULL) {
                 int fd = (int) fe->fd;
 
@@ -279,6 +312,7 @@ int aeProcessEvents(aeEventLoop *eventLoop, int flags)
                         mask |= AE_WRITABLE;
                     if (fe->mask & AE_EXCEPTION && FD_ISSET(fd, &efds))
                         mask |= AE_EXCEPTION;
+                    //执行事件处理函数    
                     fe->fileProc(eventLoop, fe->fd, fe->clientData, mask);
                     processed++;
                     /* After an event is processed our file event list
@@ -286,6 +320,7 @@ int aeProcessEvents(aeEventLoop *eventLoop, int flags)
                      * is to clear the bit for this file descriptor and
                      * restart again from the head. */
                     fe = eventLoop->fileEventHead;
+                    //清理
                     FD_CLR(fd, &rfds);
                     FD_CLR(fd, &wfds);
                     FD_CLR(fd, &efds);
@@ -360,6 +395,7 @@ int aeWait(int fd, int mask, long long milliseconds) {
     }
 }
 
+//主函数入口
 void aeMain(aeEventLoop *eventLoop)
 {
     eventLoop->stop = 0;
