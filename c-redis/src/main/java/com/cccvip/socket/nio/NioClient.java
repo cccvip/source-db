@@ -1,4 +1,4 @@
-package com.cccvip.nio;
+package com.cccvip.socket.nio;
 
 import java.io.BufferedReader;
 import java.io.IOException;

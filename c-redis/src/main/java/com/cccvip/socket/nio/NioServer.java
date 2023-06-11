@@ -1,4 +1,4 @@
-package com.cccvip.nio;
+package com.cccvip.socket.nio;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -18,6 +18,7 @@ public class NioServer {
     private Selector selector;
 
     public NioServer() throws IOException{
+
         ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
         serverSocketChannel.configureBlocking(false);
         ServerSocket serverSocket = serverSocketChannel.socket();
