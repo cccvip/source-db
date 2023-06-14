@@ -59,7 +59,9 @@ public class NettyServer {
                         ChannelPipeline channelPipeline = socketChannel.pipeline();
 
                         channelPipeline.addLast(
+                                //入参逻辑处理
                                 new ResponseEncoder()
+
                         );
 
                         channelPipeline.addLast(redisSingleEventExecutor, new CommandHandler());

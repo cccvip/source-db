@@ -7,9 +7,11 @@ import io.netty.buffer.ByteBuf;
  * @author：carl
  * @date: 2023/6/11
  */
-public interface Resp {
-    static void write(Resp resp, ByteBuf buffer) {
-        
+public class Resp {
+
+    public static void write(Resp resp, ByteBuf buffer) {
+
+
     }
 
 }
