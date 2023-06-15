@@ -1,6 +1,6 @@
 package com.cccvip.socket.command;
 
-import com.cccvip.socket.resp.Resp;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
@@ -12,8 +12,8 @@ public interface Command {
 
     CommandType type();
 
-    void setContent(Resp[] array);
+    void handle(ChannelHandlerContext ctx, ByteBuf byteBuf);
 
-    void handle(ChannelHandlerContext ctx);
+
 
 }

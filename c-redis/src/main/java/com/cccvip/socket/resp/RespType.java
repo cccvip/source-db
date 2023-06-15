@@ -1,20 +1,57 @@
 package com.cccvip.socket.resp;
 
+import com.cccvip.socket.command.CommandType;
+
 /**
  * @author carl
  */
-public class RespType {
+public enum RespType {
+    Single((byte) '+', CommandType.stringC),
 
-    private static final String SinglePrefix="+";
+    Error((byte) '-', null),
 
-    private static final String ErrorPrefix="-";
+    Number((byte) '.', null),
 
-    private static final String IntegerPrefix=".";
+    Bulk((byte) '$', null),
 
-    private static final String BulkStringPrefix="\\$";
+    Array((byte) '*', null),
 
-    private static final String ArrayStringPrefix="*";
+    CR((byte) '\r', null),
 
+    LF((byte) '\n', null);
 
+    RespType(byte prefix, CommandType commandType) {
+        this.prefix = prefix;
+        this.commandType = commandType;
+    }
+
+    private byte prefix;
+
+    private CommandType commandType;
+
+    public byte getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(byte prefix) {
+        this.prefix = prefix;
+    }
+
+    public CommandType getCommandType() {
+        return commandType;
+    }
+
+    public void setCommandType(CommandType commandType) {
+        this.commandType = commandType;
+    }
+
+    public static RespType findRespType(byte c) {
+        for (RespType respType : RespType.values()) {
+            if (c == respType.prefix) {
+                return respType;
+            }
+        }
+        return null;
+    }
 
 }

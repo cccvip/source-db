@@ -2,6 +2,7 @@ package com.cccvip.socket.netty;
 
 import com.cccvip.socket.channel.DefaultChannelOption;
 import com.cccvip.socket.channel.LocalChannelOption;
+import com.cccvip.socket.encoder.RequestDecoder;
 import com.cccvip.socket.encoder.ResponseEncoder;
 import com.cccvip.socket.handler.CommandHandler;
 import com.cccvip.socket.util.PropertiesUtil;
@@ -60,8 +61,8 @@ public class NettyServer {
 
                         channelPipeline.addLast(
                                 //入参逻辑处理
-                                new ResponseEncoder()
-
+                                new ResponseEncoder(),
+                                new RequestDecoder()
                         );
 
                         channelPipeline.addLast(redisSingleEventExecutor, new CommandHandler());
@@ -87,8 +88,8 @@ public class NettyServer {
             channelOption.boss().shutdownGracefully();
             channelOption.selectors().shutdownGracefully();
             redisSingleEventExecutor.shutdownGracefully();
-        }catch (Exception ignored) {
-            log.warn( "Exception!", ignored);
+        } catch (Exception ignored) {
+            log.warn("Exception!", ignored);
         }
 
     }
