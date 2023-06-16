@@ -4,7 +4,6 @@ package com.cccvip.socket.encoder;
 import com.cccvip.socket.command.Command;
 import com.cccvip.socket.command.CommandFactory;
 import com.cccvip.socket.command.CommandUtils;
-import com.cccvip.socket.resp.Resp;
 import com.cccvip.socket.resp.RespType;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

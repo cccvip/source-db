@@ -4,7 +4,6 @@ import com.cccvip.socket.channel.DefaultChannelOption;
 import com.cccvip.socket.channel.LocalChannelOption;
 import com.cccvip.socket.encoder.RequestDecoder;
 import com.cccvip.socket.encoder.ResponseEncoder;
-import com.cccvip.socket.handler.CommandHandler;
 import com.cccvip.socket.util.PropertiesUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -60,12 +59,11 @@ public class NettyServer {
                         ChannelPipeline channelPipeline = socketChannel.pipeline();
 
                         channelPipeline.addLast(
-                                //入参逻辑处理
+                                //输出
                                 new ResponseEncoder(),
+                                //请求
                                 new RequestDecoder()
                         );
-
-                        channelPipeline.addLast(redisSingleEventExecutor, new CommandHandler());
 
                     }
                 });
