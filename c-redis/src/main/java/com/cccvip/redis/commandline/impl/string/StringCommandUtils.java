@@ -3,11 +3,11 @@
  * All Rights Reserved.
  *
  */
-package com.cccvip.socket.command.impl.string;
+package com.cccvip.redis.commandline.impl.string;
 
 
-import com.cccvip.socket.command.CommandUtils;
-import com.cccvip.socket.resp.Resp;
+import com.cccvip.redis.commandline.CommandUtils;
+import com.cccvip.redis.resp.impl.Resp;
 import io.netty.buffer.ByteBuf;
 
 /**
@@ -24,7 +24,7 @@ public class StringCommandUtils {
 
         int startIndex = byteBuf.readerIndex();
 
-        int size = endIndex - startIndex - 1;
+        int size = endIndex - startIndex;
 
         byte[] bytes = new byte[size];
         byteBuf.readBytes(bytes);
@@ -37,6 +37,5 @@ public class StringCommandUtils {
 
         return content;
     }
-
 
 }

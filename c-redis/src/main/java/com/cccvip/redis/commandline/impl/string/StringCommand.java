@@ -3,13 +3,11 @@
  * All Rights Reserved.
  *
  */
-package com.cccvip.socket.command.impl.string;
+package com.cccvip.redis.commandline.impl.string;
 
 
-import com.cccvip.socket.command.Command;
-import com.cccvip.socket.command.CommandType;
-import com.cccvip.socket.command.CommandUtils;
-import com.cccvip.socket.resp.Resp;
+import com.cccvip.redis.commandline.Command;
+import com.cccvip.redis.commandline.CommandType;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -27,8 +25,8 @@ public class StringCommand implements Command {
 
     @Override
     public void handle(ChannelHandlerContext ctx, ByteBuf byteBuf) {
-
-
+        String content = StringCommandUtils.getContent(byteBuf);
+        String realContent = content.substring(1);
 
 
     }

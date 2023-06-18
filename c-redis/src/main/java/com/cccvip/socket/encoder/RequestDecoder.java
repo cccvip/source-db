@@ -1,10 +1,10 @@
 package com.cccvip.socket.encoder;
 
 
-import com.cccvip.socket.command.Command;
-import com.cccvip.socket.command.CommandFactory;
-import com.cccvip.socket.command.CommandUtils;
-import com.cccvip.socket.resp.RespType;
+import com.cccvip.redis.commandline.Command;
+import com.cccvip.redis.commandline.CommandFactory;
+import com.cccvip.redis.commandline.CommandUtils;
+import com.cccvip.redis.resp.impl.RespType;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -38,8 +38,10 @@ public class RequestDecoder extends SimpleChannelInboundHandler<ByteBuf> {
             byteBuf.markReaderIndex();
             return;
         }
+        byteBuf.markReaderIndex();
 
         Command command = CommandFactory.queryRespType(respType);
+
         command.handle(ctx, byteBuf);
     }
 

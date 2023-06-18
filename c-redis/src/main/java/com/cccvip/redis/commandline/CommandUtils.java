@@ -1,4 +1,4 @@
-package com.cccvip.socket.command;
+package com.cccvip.redis.commandline;
 
 
 import io.netty.buffer.ByteBuf;

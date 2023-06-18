@@ -1,6 +1,6 @@
-package com.cccvip.socket.command;
+package com.cccvip.redis.commandline;
 
-import com.cccvip.socket.command.impl.string.StringCommand;
+import com.cccvip.redis.commandline.impl.string.StringCommand;
 
 import java.util.function.Supplier;
 

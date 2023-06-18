@@ -1,7 +1,8 @@
-package com.cccvip.socket.command;
+package com.cccvip.redis.commandline;
 
 
-import com.cccvip.socket.resp.RespType;
+
+import com.cccvip.redis.resp.impl.RespType;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package com.cccvip.socket.command.impl;
+package com.cccvip.redis.commandline.impl;
 
 /**
  * @description: ping->pong
