@@ -98,6 +98,8 @@ unsigned int dictIdentityHashFunction(unsigned int key)
     return key;
 }
 
+//hash函数 
+//下面是作者自己的测评,认为是其最好的一种实现方式  5381是一个魔法数字
 /* Generic hash function (a popular one from Bernstein).
  * I tested a few and this was the best. */
 unsigned int dictGenHashFunction(const unsigned char *buf, int len) {
@@ -140,6 +142,7 @@ int _dictInit(dict *ht, dictType *type,
     return DICT_OK;
 }
 
+//hashTable 扩容
 /* Resize the table to the minimal size that contains all the elements,
  * but with the invariant of a USER/BUCKETS ration near to <= 1 */
 int dictResize(dict *ht)
@@ -202,6 +205,7 @@ int dictExpand(dict *ht, unsigned int size)
     return DICT_OK;
 }
 
+//元素添加
 /* Add an element to the target hash table */
 int dictAdd(dict *ht, void *key, void *val)
 {
@@ -210,18 +214,23 @@ int dictAdd(dict *ht, void *key, void *val)
 
     /* Get the index of the new element, or -1 if
      * the element already exists. */
+    //如果key已经添加过,返回失败
     if ((index = _dictKeyIndex(ht, key)) == -1)
         return DICT_ERR;
+    //创建entry,塞入table中
 
     /* Allocates the memory and stores key */
     entry = _dictAlloc(sizeof(*entry));
     entry->next = ht->table[index];
     ht->table[index] = entry;
-
+    
+    //
     /* Set the hash entry fields. */
     dictSetHashKey(ht, entry, key);
     dictSetHashVal(ht, entry, val);
+
     ht->used++;
+    
     return DICT_OK;
 }
 

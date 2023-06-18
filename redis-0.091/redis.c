@@ -2092,13 +2092,16 @@ static void echoCommand(redisClient *c) {
 
 static void setGenericCommand(redisClient *c, int nx) {
     int retval;
-
+    //添加元素
     retval = dictAdd(c->db->dict,c->argv[1],c->argv[2]);
+    //当前元素已经存在,添加失败
     if (retval == DICT_ERR) {
+        //判断是不是直接替换value
         if (!nx) {
             dictReplace(c->db->dict,c->argv[1],c->argv[2]);
             incrRefCount(c->argv[2]);
         } else {
+            //直接返回
             addReply(c,shared.czero);
             return;
         }
@@ -2107,6 +2110,7 @@ static void setGenericCommand(redisClient *c, int nx) {
         incrRefCount(c->argv[2]);
     }
     server.dirty++;
+    //移除过期元素
     removeExpire(c->db,c->argv[1]);
     addReply(c, nx ? shared.cone : shared.ok);
 }

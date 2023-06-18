@@ -36,11 +36,13 @@
 #include <ctype.h>
 #include "zmalloc.h"
 
+//oom 内存溢出
 static void sdsOomAbort(void) {
     fprintf(stderr,"SDS: Out Of Memory (SDS_ABORT_ON_OOM defined)\n");
     abort();
 }
 
+//new 一个结构体
 sds sdsnewlen(const void *init, size_t initlen) {
     struct sdshdr *sh;
 
@@ -60,6 +62,7 @@ sds sdsnewlen(const void *init, size_t initlen) {
     return (char*)sh->buf;
 }
 
+//清空字符串
 sds sdsempty(void) {
     return sdsnewlen("",0);
 }
@@ -69,15 +72,17 @@ sds sdsnew(const char *init) {
     return sdsnewlen(init, initlen);
 }
 
+//计算字符串长度
 size_t sdslen(const sds s) {
     struct sdshdr *sh = (void*) (s-(sizeof(struct sdshdr)));
     return sh->len;
 }
 
+//扩容
 sds sdsdup(const sds s) {
     return sdsnewlen(s, sdslen(s));
 }
-
+//内存释放
 void sdsfree(sds s) {
     if (s == NULL) return;
     zfree(s-sizeof(struct sdshdr));
