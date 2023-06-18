@@ -1,6 +1,8 @@
 package com.cccvip.redis.commandline;
 
-import com.cccvip.redis.commandline.impl.string.StringCommand;
+import com.cccvip.redis.commandline.impl.Ping;
+import com.cccvip.redis.commandline.impl.string.Get;
+import com.cccvip.redis.commandline.impl.string.Set;
 
 import java.util.function.Supplier;
 
@@ -11,8 +13,7 @@ import java.util.function.Supplier;
  */
 public enum CommandType {
 
-    stringC(StringCommand::new)
-    ;
+    get(Get::new), set(Set::new), ping(Ping::new);
 
     private final Supplier<Command> supplier;
 

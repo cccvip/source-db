@@ -1,5 +1,13 @@
 package com.cccvip.redis.commandline.impl.string;
 
-public class Set {
+import com.cccvip.redis.commandline.Command;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
 
+public class Set implements Command {
+
+    @Override
+    public void handle(ChannelHandlerContext ctx, ByteBuf byteBuf) {
+
+    }
 }

@@ -1,8 +1,7 @@
 package com.cccvip.redis.commandline;
 
 
-
-import com.cccvip.redis.resp.impl.RespType;
+import com.cccvip.redis.resp.RespType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,8 +27,10 @@ public class CommandFactory {
     //例如输入 set 1 2
     //
     public static Command queryRespType(RespType respType) {
-        CommandType commandType = respType.getCommandType();
-        return commandType.getSupplier().get();
+
+
+        return null;
+//        return commandType.getSupplier().get();
     }
 
 

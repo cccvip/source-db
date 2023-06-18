@@ -10,10 +10,7 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public interface Command {
 
-    CommandType type();
-
-    void handle(ChannelHandlerContext ctx,ByteBuf byteBuf);
-
+    void handle(ChannelHandlerContext ctx, ByteBuf byteBuf);
 
 
 }

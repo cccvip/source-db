@@ -1,23 +1,29 @@
-/*
- * All Rights Reserved.
- *
- */
-package com.cccvip.redis.commandline.impl.string;
+package com.cccvip.redis.resp.impl;
 
-
+import com.cccvip.redis.commandline.CommandType;
 import com.cccvip.redis.commandline.CommandUtils;
 import com.cccvip.redis.resp.Resp;
 import io.netty.buffer.ByteBuf;
+import lombok.Data;
 
 /**
- * StringCommadnUtils.
- *
- * @author Carl, 2023-06-16 13:26
+ * @description:
+ * @author：carl
+ * @date: 2023/6/18
  */
-public class StringCommandUtils {
+@Data
+public class SimpleString implements Resp {
 
-    public static String getContent(ByteBuf byteBuf) {
-        //读取一个完整命令行
+    private String content;
+
+    @Override
+    public CommandType command() {
+
+        return CommandType.ping;
+    }
+
+    @Override
+    public void decode(ByteBuf byteBuf) {
         Integer endIndex = CommandUtils.readEndIndex(byteBuf);
 
         int startIndex = byteBuf.readerIndex();
@@ -31,9 +37,8 @@ public class StringCommandUtils {
 
         byteBuf.markReaderIndex();
 
-        String content = new String(bytes, Resp.UTF_8);
-
-        return content;
+        content = new String(bytes, Resp.UTF_8);
     }
+
 
 }
