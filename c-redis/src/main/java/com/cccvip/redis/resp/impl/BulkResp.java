@@ -25,7 +25,6 @@ public class BulkResp implements Resp<List<BulkArray>> {
 
     private final List<BulkArray> bulkArrays;
 
-
     public BulkResp() {
         bulkArrays = new ArrayList<>();
     }
@@ -50,7 +49,6 @@ public class BulkResp implements Resp<List<BulkArray>> {
     @Override
     public void decode(ByteBuf byteBuf) {
         //标志位
-        int mark = byteBuf.readerIndex();
         byte number = byteBuf.readByte();
         //跳过size
         byteBuf.skipBytes(number);
@@ -59,9 +57,6 @@ public class BulkResp implements Resp<List<BulkArray>> {
             bulkArrayDeal(bulkArrays, byteBuf);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            //还原
-            byteBuf.readerIndex(mark);
         }
     }
 

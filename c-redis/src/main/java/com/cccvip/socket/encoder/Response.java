@@ -1,22 +1,22 @@
 /*
+ * Copyright @2023 CrisisGo Inc.
  * All Rights Reserved.
  *
  */
-package com.cccvip.redis.resp.entity;
+package com.cccvip.socket.encoder;
 
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
- * Errors.
+ * Response.
  *
- * @author Carl, 2023-06-20 11:45
+ * @author Carl, 2023-06-20 14:41
  */
-@Data
 @AllArgsConstructor
-public class Errors {
-
+@Data
+public class Response {
     private String content;
 
 }

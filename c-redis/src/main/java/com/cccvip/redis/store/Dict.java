@@ -3,6 +3,7 @@ package com.cccvip.redis.store;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @description:
@@ -16,6 +17,5 @@ public class Dict {
 
     private Integer used;
 
-    private List<DictEntry> table;
-
+    private Map<String, DictEntry> table;
 }

@@ -1,5 +1,4 @@
 /*
- * Copyright @2023 CrisisGo Inc.
  * All Rights Reserved.
  *
  */
@@ -7,6 +6,9 @@ package com.cccvip.redis.resp.entity;
 
 
 import lombok.Data;
+
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * BulkArray.
@@ -16,6 +18,12 @@ import lombok.Data;
 @Data
 public class BulkArray {
 
+    private static final Charset CHARSET = StandardCharsets.UTF_8;
+
     private String command;
+
+    public String toUtf8String() {
+        return new String(command.getBytes(), CHARSET);
+    }
 
 }
