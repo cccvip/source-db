@@ -1,7 +1,6 @@
 package com.cccvip.redis.commandline.impl;
 
 import com.cccvip.redis.commandline.Command;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
@@ -12,7 +11,7 @@ import io.netty.channel.ChannelHandlerContext;
 public class Ping implements Command {
 
     @Override
-    public void handle(ChannelHandlerContext ctx, ByteBuf byteBuf) {
+    public void handle(ChannelHandlerContext ctx) {
 
     }
 }

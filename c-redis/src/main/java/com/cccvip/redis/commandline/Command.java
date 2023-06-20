@@ -1,6 +1,5 @@
 package com.cccvip.redis.commandline;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
@@ -10,7 +9,6 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public interface Command {
 
-    void handle(ChannelHandlerContext ctx, ByteBuf byteBuf);
-
+    void handle(ChannelHandlerContext ctx);
 
 }

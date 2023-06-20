@@ -1,14 +1,19 @@
 package com.cccvip.redis.commandline;
 
 
+import com.cccvip.redis.resp.Resp;
 import com.cccvip.redis.resp.RespType;
+import com.cccvip.redis.resp.entity.BulkArray;
+import com.cccvip.redis.resp.impl.BulkResp;
+import io.netty.buffer.ByteBuf;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
 /**
- * CommandFacotry.
+ * CommandFactory.
  *
  * @author Carl, 2023-06-15 17:19
  */
@@ -23,14 +28,27 @@ public class CommandFactory {
         }
     }
 
-    //根据返回类型
-    //例如输入 set 1 2
-    //
-    public static Command queryRespType(RespType respType) {
+    public static Command queryRespType(ByteBuf in) {
+
+        byte header = in.readByte();
+        CommandType commandType = null;
+        if (header == RespType.MULTYBULK.getPrefix()) {
+
+            Resp<List<BulkArray>> resp = new BulkResp();
+
+            resp.decode(in);
+
+            commandType = resp.command();
+
+            BulkCommand command = (BulkCommand) commandType.getSupplier().get();
+
+            command.setContent(resp.getContent());
+
+            return command;
+        }
 
 
         return null;
-//        return commandType.getSupplier().get();
     }
 
 

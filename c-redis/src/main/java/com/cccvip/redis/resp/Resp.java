@@ -11,10 +11,12 @@ import java.nio.charset.StandardCharsets;
  * @author：carl
  * @date: 2023/6/18
  */
-public interface Resp {
+public interface Resp<T> {
     Charset UTF_8 = StandardCharsets.UTF_8;
 
     CommandType command();
+
+    T getContent();
 
     void decode(ByteBuf byteBuf);
 }

@@ -1,13 +1,20 @@
 package com.cccvip.redis.commandline.impl.string;
 
-import com.cccvip.redis.commandline.Command;
-import io.netty.buffer.ByteBuf;
+import com.cccvip.redis.commandline.BulkCommand;
+import com.cccvip.redis.resp.entity.BulkArray;
 import io.netty.channel.ChannelHandlerContext;
 
-public class Set implements Command {
+import java.util.List;
+
+public class Set implements BulkCommand {
 
     @Override
-    public void handle(ChannelHandlerContext ctx, ByteBuf byteBuf) {
+    public void setContent(List<BulkArray> array) {
+
+    }
+
+    @Override
+    public void handle(ChannelHandlerContext ctx) {
 
     }
 }

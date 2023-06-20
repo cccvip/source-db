@@ -11,9 +11,11 @@ public class ResponseEncoder extends MessageToByteEncoder<Resp> {
     public ResponseEncoder() {
 
     }
+
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, Resp resp, ByteBuf byteBuf) throws Exception {
         try {
+
 //            respUtils.response(byteBuf);
             byteBuf.writeBytes(byteBuf);
         } catch (Exception e) {

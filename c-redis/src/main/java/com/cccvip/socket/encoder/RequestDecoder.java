@@ -4,7 +4,8 @@ package com.cccvip.socket.encoder;
 import com.cccvip.redis.commandline.Command;
 import com.cccvip.redis.commandline.CommandFactory;
 import com.cccvip.redis.commandline.CommandUtils;
-import com.cccvip.redis.resp.RespType;
+import com.cccvip.redis.commandline.impl.string.StringCommandUtils;
+import com.cccvip.redis.resp.entity.Errors;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -22,22 +23,31 @@ import lombok.extern.slf4j.Slf4j;
 public class RequestDecoder extends SimpleChannelInboundHandler<ByteBuf> {
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, ByteBuf byteBuf) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
 
         //根据byteBuf判断  如果没有\r\n 结束符,命令不完整
-        Integer endIndex = CommandUtils.readEndIndex(byteBuf);
+        Integer endIndex = CommandUtils.readEndIndex(in);
         if (endIndex == -1) {
             throw new Exception("error command");
         }
 
-        //读取第一个首字节,就能判断是哪种类型
-        byte c = byteBuf.readByte();
+        int mark = in.readerIndex();
+        try {
+            Command command = CommandFactory.queryRespType(in);
 
-        RespType respType = RespType.findRespType(c);
+            if (command == null) {
+                String content = StringCommandUtils.getContent(in);
+                ctx.writeAndFlush(new Errors("unsupport command:" + content));
+                return;
+            }
+            command.handle(ctx);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            //还原
+            in.readerIndex(mark);
+        }
 
-        Command command = CommandFactory.queryRespType(respType);
-
-        command.handle(ctx, byteBuf);
     }
 
     @Override
