@@ -11,7 +11,10 @@ public enum RespType {
     Simple((byte) '+'),
     BULK((byte) '$'),
     INTEGER((byte) ':'),
-    MULTYBULK((byte) '*');
+    MULTYBULK((byte) '*'),
+    R((byte) '\r'),
+    N((byte) '\n'),
+    ;
 
     private byte prefix;
 

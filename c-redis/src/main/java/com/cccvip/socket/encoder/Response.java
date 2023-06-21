@@ -17,6 +17,9 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class Response {
+
+    private byte prefix;
+
     private String content;
 
 }

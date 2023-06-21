@@ -1,6 +1,7 @@
 package com.cccvip.redis.commandline.impl.string;
 
 import com.cccvip.redis.commandline.BulkCommand;
+import com.cccvip.redis.resp.RespType;
 import com.cccvip.redis.resp.entity.BulkArray;
 import com.cccvip.redis.resp.impl.SimpleString;
 import com.cccvip.redis.store.RedisCore;
@@ -62,9 +63,8 @@ public class Set implements BulkCommand {
 
         boolean exist = redisCore.exist(key);
 
-        //异常情况,key已经存在,但是设置了未覆盖
         if (notExistSet && exist) {
-            ctx.writeAndFlush(new Response(null));
+            ctx.writeAndFlush(new Response(RespType.ERROR.getPrefix(), null));
             return;
         }
 
@@ -77,6 +77,6 @@ public class Set implements BulkCommand {
         stringData.setTimeout(timeout);
 
         redisCore.add(key, stringData);
-        ctx.writeAndFlush(new Response("OK"));
+        ctx.writeAndFlush(new Response(RespType.Simple.getPrefix(), "OK"));
     }
 }
