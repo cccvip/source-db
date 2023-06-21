@@ -13,8 +13,11 @@ import java.util.Properties;
  */
 public class PropertiesUtil {
 
-    private PropertiesUtil() {}
+    private PropertiesUtil() {
+    }
+
     private static PropertiesUtil Instance = new PropertiesUtil();
+
     public static final PropertiesUtil getInstance() {
         return Instance;
     }
@@ -32,36 +35,45 @@ public class PropertiesUtil {
     }
 
     public static Boolean getTcpKeepAlive() {
-        String appendOnly =getProParams().getProperty("tcp_keepalive");
-        if(!StringUtil.isNullOrEmpty(appendOnly)){
+        String appendOnly = getProParams().getProperty("tcp_keepalive");
+        if (!StringUtil.isNullOrEmpty(appendOnly)) {
             return appendOnly.trim().equals("yes");
         }
-        return  false;
+        return false;
     }
 
     public static int getNodePort() {
-        Integer port=6379;
-        try{
-            String strPort =getProParams().getProperty("port");
-            port=Integer.parseInt(strPort);
-        }catch (Exception e) {
+
+        Integer port = 6379;
+
+        try {
+            String strPort = getProParams().getProperty("port");
+
+            port = Integer.parseInt(strPort);
+
+        } catch (Exception e) {
             return 6379;
         }
-        if(port<=0||port>60000){
+
+        if (port <= 0 || port > 60000) {
             return 6379;
         }
+
         return port;
     }
 
     private Properties getProParams(String propertiesName) {
-        InputStream is = getClass().getResourceAsStream(propertiesName);
+
+        InputStream is = getClass().getClassLoader().getResourceAsStream(propertiesName);
+
         Properties prop = new Properties();
+
         try {
             prop.load(is);
         } catch (IOException e1) {
             e1.printStackTrace();
-        }finally {
-            if(is != null) {
+        } finally {
+            if (is != null) {
                 try {
                     is.close();
                 } catch (IOException e) {
@@ -69,7 +81,32 @@ public class PropertiesUtil {
                 }
             }
         }
+
         return prop;
+    }
+
+    public static void main(String[] args) {
+        PropertiesUtil propertiesUtil = new PropertiesUtil();
+        InputStream inputStream = propertiesUtil.getClass().getClassLoader().getResourceAsStream("redis-conf.properties");
+        Properties prop = new Properties();
+
+        try {
+            prop.load(inputStream);
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        String port = prop.getProperty("port");
+
+        System.out.println(port);
     }
 
 }
