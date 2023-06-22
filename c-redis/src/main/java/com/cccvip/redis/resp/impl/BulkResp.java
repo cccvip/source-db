@@ -5,8 +5,10 @@ import com.cccvip.redis.resp.Resp;
 import com.cccvip.redis.resp.RespType;
 import com.cccvip.redis.resp.entity.BulkArray;
 import io.netty.buffer.ByteBuf;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -21,6 +23,7 @@ import java.util.List;
  * @author：carl
  * @date: 2023/6/18
  */
+@Slf4j
 public class BulkResp implements Resp<List<BulkArray>> {
 
     private final List<BulkArray> bulkArrays;
@@ -50,14 +53,12 @@ public class BulkResp implements Resp<List<BulkArray>> {
     public void decode(ByteBuf byteBuf) {
         //标志位
         byte number = byteBuf.readByte();
-        //跳过size
-        byteBuf.skipBytes(number);
 
-        try {
-            bulkArrayDeal(bulkArrays, byteBuf);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        byte[] srtbyte = new byte[]{number};
+
+        log.info("receive number {}", new String(srtbyte));
+
+        bulkArrayDeal(bulkArrays, byteBuf);
     }
 
     //  $3\r\n
@@ -69,9 +70,11 @@ public class BulkResp implements Resp<List<BulkArray>> {
     public void bulkArrayDeal(List<BulkArray> bulkArrays, ByteBuf byteBuf) {
 
         byte bc = byteBuf.readByte();
-        if (bc == '\r' || bc == '\n') {
-            return;
+
+        while (bc == '\r' || bc == '\n') {
+            bc = byteBuf.readByte();
         }
+
         if (RespType.BULK.getPrefix() == bc) {
             //需要读取的size
             int size = byteBuf.readByte() - '0';
@@ -84,16 +87,19 @@ public class BulkResp implements Resp<List<BulkArray>> {
         int start = 1;
 
         byte b;
+        //跳过\r\n
+        in.skipBytes(2);
 
-        StringBuilder stringBuilder = new StringBuilder();
+        byte[] characters = new byte[size];
 
         while (start <= size && (b = in.readByte()) != '\r') {
-            stringBuilder.append(b);
+            characters[start - 1] = b;
+            start++;
         }
 
         BulkArray bulkArray = new BulkArray();
 
-        bulkArray.setCommand(stringBuilder.toString());
+        bulkArray.setCommand(new String(characters));
 
         return bulkArray;
     }

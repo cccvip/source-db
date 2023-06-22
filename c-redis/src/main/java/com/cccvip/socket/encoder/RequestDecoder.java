@@ -9,6 +9,7 @@ import com.cccvip.redis.resp.entity.Errors;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -30,6 +31,8 @@ public class RequestDecoder extends SimpleChannelInboundHandler<ByteBuf> {
         if (endIndex == -1) {
             throw new Exception("error command");
         }
+        String c = in.toString(CharsetUtil.UTF_8);
+        log.info("receive content {}", c);
 
         int mark = in.readerIndex();
         try {

@@ -1,8 +1,8 @@
 package com.cccvip.socket.channel;
 
-import io.netty.channel.DefaultEventLoopGroup;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.local.LocalServerChannel;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -12,15 +12,15 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author：carl
  * @date: 2023/6/11
  */
-public class DefaultChannelOption implements LocalChannelOption {
+public class DefaultChannelOption implements LocalChannelOption<NioServerSocketChannel> {
 
-    private final DefaultEventLoopGroup boss;
+    private final NioEventLoopGroup boss;
 
-    private final DefaultEventLoopGroup selectors;
+    private final NioEventLoopGroup worker;
 
     public DefaultChannelOption() {
 
-        this.boss = new DefaultEventLoopGroup(4, new ThreadFactory() {
+        this.boss = new NioEventLoopGroup(1, new ThreadFactory() {
             private AtomicInteger index = new AtomicInteger(0);
 
             @Override
@@ -29,12 +29,12 @@ public class DefaultChannelOption implements LocalChannelOption {
             }
         });
 
-        this.selectors = new DefaultEventLoopGroup(8, new ThreadFactory() {
+        this.worker = new NioEventLoopGroup(2, new ThreadFactory() {
             private AtomicInteger index = new AtomicInteger(0);
 
             @Override
             public Thread newThread(Runnable r) {
-                return new Thread(r, "Server_selector_" + index.getAndIncrement());
+                return new Thread(r, "Server_worker_" + index.getAndIncrement());
             }
         });
     }
@@ -47,12 +47,12 @@ public class DefaultChannelOption implements LocalChannelOption {
     @Override
     public EventLoopGroup selectors() {
 
-        return selectors;
+        return worker;
     }
 
     @Override
-    public Class getChannelClass() {
+    public Class<NioServerSocketChannel> getChannelClass() {
 
-        return LocalServerChannel.class;
+        return NioServerSocketChannel.class;
     }
 }

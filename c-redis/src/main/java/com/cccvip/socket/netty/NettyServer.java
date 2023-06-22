@@ -6,12 +6,10 @@ import com.cccvip.socket.encoder.RequestDecoder;
 import com.cccvip.socket.encoder.ResponseEncoder;
 import com.cccvip.socket.util.PropertiesUtil;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.ChannelPipeline;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.concurrent.EventExecutorGroup;
@@ -29,7 +27,7 @@ public class NettyServer {
 
     ServerBootstrap serverBootstrap = new ServerBootstrap();
 
-    LocalChannelOption channelOption = new DefaultChannelOption();
+    LocalChannelOption<NioServerSocketChannel> channelOption = new DefaultChannelOption();
 
     private final EventExecutorGroup redisSingleEventExecutor;
 
@@ -40,18 +38,20 @@ public class NettyServer {
     public void start() {
 
         serverBootstrap.group(channelOption.boss(), channelOption.selectors())
+
                 .channel(channelOption.getChannelClass())
+
                 .handler(new LoggingHandler(LogLevel.INFO))
                 //队列大小
-                .option(ChannelOption.SO_BACKLOG, 1024)
+                .option(ChannelOption.SO_BACKLOG, 32)
                 //
                 .option(ChannelOption.SO_REUSEADDR, true)
                 //
-                .option(ChannelOption.SO_KEEPALIVE, PropertiesUtil.getTcpKeepAlive())
-                .localAddress(new InetSocketAddress(PropertiesUtil.getNodeAddress(), PropertiesUtil.getNodePort()))
+                .childOption(ChannelOption.SO_KEEPALIVE, PropertiesUtil.getTcpKeepAlive())
+
+                .localAddress(PropertiesUtil.getNodeAddress(), PropertiesUtil.getNodePort())
+
                 //业务流程处理
-                //1 心跳
-                //2 命令处理
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
@@ -64,24 +64,24 @@ public class NettyServer {
                                 //请求
                                 new RequestDecoder()
                         );
-
                     }
                 });
 
-        ChannelFuture sync = null;
-
+        ChannelFuture sync;
+        Channel channel = null;
         try {
             sync = serverBootstrap.bind().sync();
+            channel = sync.channel();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        log.info(sync.channel().localAddress().toString());
+        assert channel != null;
+        log.info(channel.toString());
     }
 
 
     public void close() {
-
         try {
             channelOption.boss().shutdownGracefully();
             channelOption.selectors().shutdownGracefully();
@@ -89,14 +89,11 @@ public class NettyServer {
         } catch (Exception ignored) {
             log.warn("Exception!", ignored);
         }
-
     }
 
     public static void main(String[] args) {
         NettyServer nettyServer = new NettyServer();
-
         nettyServer.start();
-
     }
 
 }
