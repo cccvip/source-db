@@ -2,7 +2,6 @@ package com.cccvip.redis.store;
 
 import lombok.Data;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,4 +17,18 @@ public class Dict {
     private Integer used;
 
     private Map<String, DictEntry> table;
+
+    public Dict() {
+
+    }
+
+    public Dict(Integer size, Integer used, Map<String, DictEntry> table) {
+        this.size = size;
+        this.used = used;
+        this.table = table;
+    }
+
+
 }
+
+

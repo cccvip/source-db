@@ -33,8 +33,8 @@ public class Set implements BulkCommand {
 
     @Override
     public void setContent(List<BulkArray> array) {
-        key = array.get(0).getCommand();
         key = array.get(1).getCommand();
+        value = array.get(2).getCommand();
 
         //兼容set key value EX/NX/PX等扩展
         for (int i = 3; i < array.size(); i++) {

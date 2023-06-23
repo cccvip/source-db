@@ -58,7 +58,13 @@ public class BulkResp implements Resp<List<BulkArray>> {
 
         log.info("receive number {}", new String(srtbyte));
 
-        bulkArrayDeal(bulkArrays, byteBuf);
+        //使用循环,不使用递归
+        int loop = (int) number - '0';
+
+        for (int s = 0; s < loop; s++) {
+            bulkArrayDeal(bulkArrays, byteBuf);
+        }
+
     }
 
     //  $3\r\n

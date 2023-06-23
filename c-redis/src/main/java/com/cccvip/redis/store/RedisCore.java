@@ -8,7 +8,9 @@ package com.cccvip.redis.store;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * RedisCore.
@@ -21,7 +23,12 @@ public class RedisCore implements RedisMethod {
     private final Dict dict;
 
     public RedisCore() {
+
+        Map<String, DictEntry> table = new HashMap<>();
+
         dict = new Dict();
+
+        dict.setTable(table);
     }
 
     @Override
@@ -38,12 +45,10 @@ public class RedisCore implements RedisMethod {
 
     @Override
     public long add(String key, DictEntry dictEntry) {
-
         dict.getTable().put(key, dictEntry);
 
         return 1;
     }
-
 
     @Override
     public long remove(List<String> keys) {
@@ -52,6 +57,8 @@ public class RedisCore implements RedisMethod {
 
     @Override
     public boolean exist(String key) {
+
         return dict.getTable().containsKey(key);
+
     }
 }

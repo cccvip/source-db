@@ -26,13 +26,13 @@ public class Get implements BulkCommand {
         RedisCore redisCore = RedisSingleton.getSingleton();
         DictEntry dictEntry = redisCore.get(key);
         if (dictEntry == null) {
-            ctx.writeAndFlush(new Response(RespType.ERROR.getPrefix(), null));
+            ctx.writeAndFlush(new Response(RespType.ERROR.getPrefix(), "error"));
             return;
         }
 
         if (dictEntry instanceof DictString) {
             String value = ((DictString) dictEntry).getValue();
-            ctx.writeAndFlush(new Response(RespType.BULK.getPrefix(), value));
+            ctx.writeAndFlush(new Response(RespType.Simple.getPrefix(), value));
             return;
         }
 
