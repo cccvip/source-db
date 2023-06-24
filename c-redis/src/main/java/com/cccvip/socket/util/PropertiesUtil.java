@@ -62,6 +62,14 @@ public class PropertiesUtil {
         return port;
     }
 
+    public static String getAofPath() {
+        String aofDataDir =getProParams().getProperty("aof_data_dir");
+        if(StringUtil.isNullOrEmpty(aofDataDir)){
+            return "./aof_data_dir/";
+        }
+        return  aofDataDir;
+    }
+
     private Properties getProParams(String propertiesName) {
 
         InputStream is = getClass().getClassLoader().getResourceAsStream(propertiesName);
